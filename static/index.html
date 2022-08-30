@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link
+            type="text/css"
+            crossorigin="anonymous"
+            rel="stylesheet"
+            href="https://unpkg.com/primeflex@3.1.0/primeflex.css"
+        />
+        <link
+            type="text/css"
+            crossorigin="anonymous"
+            rel="stylesheet"
+            href="https://unpkg.com/primereact@7.2.1/resources/themes/lara-dark-blue/theme.css"
+        />
+        <link
+            crossorigin="anonymous"
+            href="https://fonts.googleapis.com/icon?family=Material+Icons"
+            rel="stylesheet"
+        />
+        <title>LoGo</title>
+        <style>
+            @import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+            :root {
+                font-family: "Montserrat", sans-serif;
+                --border-radius: 1rem !important;
+            }
+
+            .material-icons {
+                font-family: "Material Icons";
+                font-weight: normal;
+                font-style: normal;
+                font-size: 36px; /* Preferred icon size */
+                display: inline-block;
+                line-height: 1;
+                text-transform: none;
+                letter-spacing: normal;
+                word-wrap: normal;
+                white-space: nowrap;
+                direction: ltr;
+
+                /* Support for all WebKit browsers. */
+                -webkit-font-smoothing: antialiased;
+                /* Support for Safari and Chrome. */
+                text-rendering: optimizeLegibility;
+
+                /* Support for Firefox. */
+                -moz-osx-font-smoothing: grayscale;
+
+                /* Support for IE. */
+                font-feature-settings: "liga";
+            }
+
+            @keyframes bg {
+                0% {
+                    background: var(--blue-400);
+                }
+                12.5% {
+                    background: var(--green-400);
+                }
+                25% {
+                    background: var(--yellow-400);
+                }
+                37.5% {
+                    background: var(--cyan-400);
+                }
+                50% {
+                    background: var(--pink-400);
+                }
+                62.5% {
+                    background: var(--indigo-400);
+                }
+                75% {
+                    background: var(--teal-400);
+                }
+                87.5% {
+                    background: var(--orange-400);
+                }
+                100% {
+                    background: var(--purple-400);
+                }
+            }
+
+            body {
+                animation-name: bg;
+                animation-duration: 27s;
+                animation-iteration-count: infinite;
+                animation-direction: alternate;
+                animation-timing-function: linear;
+            }
+
+            img {
+                border-width: 0.35rem;
+            }
+
+            button {
+                border-top-right-radius: 6px !important;
+                border-bottom-right-radius: 6px !important;
+            }
+        </style>
+    </head>
+    <body class="m-0 p-0">
+        <div class="flex flex-column align-items-center">
+            <div
+                class="align-self-center border-round-bottom bg-primary-reverse px-3 z-1 absolute shadow-8 text-8xl font-bold"
+            >
+                <div class="flex justify-content-center">
+                    <span class="text-green-500 m-0">Lo</span>
+                    <span class="text-blue-500 m-0">Go</span>
+                </div>
+            </div>
+            <img
+                class="z-0 mt-6 w-10 border-900 border-round border-solid"
+                src="./turtle.png"
+                id="turtle"
+                alt="LoGo"
+            />
+            <div class="fixed bottom-0 p-5">
+                <div class="p-card p-inputgroup flex shadow-6" id="panel">
+                    <span
+                        class="material-icons line-height-1 pl-1 align-self-center"
+                    >
+                        arrow_forward_ios
+                    </span>
+                    <input
+                        class="p-inputtext p-component"
+                        type="text"
+                        name="query"
+                        placeholder="Command"
+                    />
+                    <button
+                        class="p-button p-component p-button-icon-only py-1 align-self-end"
+                        title="Execute"
+                        id="exec"
+                    >
+                        <span class="material-icons line-height-1"
+                            >terminal</span
+                        >
+                    </button>
+                </div>
+            </div>
+        </div>
+        <script>
+            (() => {
+                let btn = document.querySelector("#exec");
+                let inp = document.querySelector("input");
+                let img = document.querySelector("#turtle");
+                const handleExec = (event) => {
+                    if (inp.value.trim() === "") {
+                        return;
+                    }
+                    fetch(`/cmd?query=${inp.value}`)
+                        .then((o) => {
+                            return o.body;
+                        })
+                        .then((o) => {
+                            o.getReader()
+                                .read()
+                                .then((e) => {
+                                    img.src =
+                                        "data:image/jpeg;base64," +
+                                        btoa(
+                                            e.value.reduce(
+                                                (data, byte) =>
+                                                    data +
+                                                    String.fromCharCode(byte),
+                                                ""
+                                            )
+                                        );
+                                });
+                        })
+                        .catch(console.error);
+                    event.preventDefault();
+                    inp.value = "";
+                };
+
+                btn.addEventListener("click", handleExec);
+                inp.addEventListener("keypress", (e) => {
+                    if (e.key === "Enter") {
+                        handleExec(e);
+                    }
+                });
+            })();
+        </script>
+    </body>
+</html>
